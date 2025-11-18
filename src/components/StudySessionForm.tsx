@@ -20,6 +20,16 @@ export function StudySessionForm({ onClose, onSuccess }: StudySessionFormProps) 
     ? ((parseInt(correctQuestions) / parseInt(totalQuestions)) * 100).toFixed(1)
     : null;
 
+  // Função para formatar data no formato DD/MM/AAAA
+  const formatDateToBrazilian = (dateString: string): string => {
+    if (!dateString) return '';
+    const date = new Date(dateString + 'T00:00:00');
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -144,14 +154,32 @@ export function StudySessionForm({ onClose, onSuccess }: StudySessionFormProps) 
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Data da Sessão
             </label>
-            <input
-              type="date"
-              value={sessionDate}
-              onChange={(e) => setSessionDate(e.target.value)}
-              required
-              max={new Date().toISOString().split('T')[0]}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
+            <div className="space-y-2">
+              <div className="relative">
+                <input
+                  type="date"
+                  value={sessionDate}
+                  onChange={(e) => setSessionDate(e.target.value)}
+                  required
+                  max={new Date().toISOString().split('T')[0]}
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-pointer"
+                  style={{
+                    colorScheme: 'light',
+                  }}
+                />
+              </div>
+              <div className="bg-blue-50 border border-blue-200 rounded-lg px-4 py-2.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-blue-700 font-medium">Data selecionada:</span>
+                  <span className="text-sm font-bold text-blue-900">
+                    {formatDateToBrazilian(sessionDate)}
+                  </span>
+                </div>
+              </div>
+              <p className="text-xs text-gray-500">
+                📅 Clique no campo acima para abrir o calendário • Formato: DD/MM/AAAA
+              </p>
+            </div>
           </div>
 
           {error && (
