@@ -10,10 +10,19 @@ export interface CreateStudySessionInput {
 }
 
 export const createStudySession = async (input: CreateStudySessionInput) => {
-  const { data: { user } } = await supabase.auth.getUser();
+  // Verificar autenticação
+  const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+  if (authError) {
+    console.error('Erro de autenticação:', authError);
+    throw new Error(`Erro de autenticação: ${authError.message}`);
+  }
 
   if (!user) {
-    throw new Error('User not authenticated');
+    // Tentar obter a sessão atual
+    const { data: { session } } = await supabase.auth.getSession();
+    console.error('Usuário não autenticado. Sessão atual:', session);
+    throw new Error('Usuário não autenticado. Por favor, faça login novamente.');
   }
 
   const { data: session, error: sessionError } = await supabase

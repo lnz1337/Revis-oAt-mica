@@ -20,15 +20,27 @@ function App() {
   const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    // Verificar sessão inicial
+    supabase.auth.getSession().then(({ data: { session }, error }) => {
+      if (error) {
+        console.error('Erro ao obter sessão:', error);
+      }
       setUser(session?.user ?? null);
       setLoading(false);
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      (async () => {
-        setUser(session?.user ?? null);
-      })();
+    // Escutar mudanças no estado de autenticação
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('Auth state changed:', event, session?.user?.email);
+      setUser(session?.user ?? null);
+      
+      // Se o usuário acabou de fazer login, garantir que a sessão está atualizada
+      if (event === 'SIGNED_IN' && session) {
+        // Aguardar um pouco para garantir que a sessão está totalmente carregada
+        await new Promise(resolve => setTimeout(resolve, 100));
+        const { data: { session: currentSession } } = await supabase.auth.getSession();
+        setUser(currentSession?.user ?? null);
+      }
     });
 
     return () => subscription.unsubscribe();
@@ -51,7 +63,13 @@ function App() {
   }
 
   if (!user) {
-    return <AuthForm onAuthSuccess={() => setUser(true)} />;
+    return <AuthForm onAuthSuccess={() => {
+      // O onAuthStateChange vai atualizar o estado automaticamente
+      // Mas vamos garantir verificando a sessão novamente
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        setUser(session?.user ?? null);
+      });
+    }} />;
   }
 
   return (
