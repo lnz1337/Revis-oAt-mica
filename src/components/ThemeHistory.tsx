@@ -52,41 +52,42 @@ export function ThemeHistory({ theme, onClose, onViewContent }: ThemeHistoryProp
   const trend = getProgressTrend();
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
-        <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="bg-green-500 p-2 rounded-lg">
-              <TrendingUp className="w-5 h-5 text-white" />
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-2 sm:p-4 z-50 overflow-y-auto">
+      <div className="bg-white rounded-xl sm:rounded-2xl shadow-2xl w-full max-w-4xl max-h-[95vh] sm:max-h-[90vh] overflow-y-auto my-auto">
+        <div className="sticky top-0 bg-white border-b border-gray-200 px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between z-10">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+            <div className="bg-green-500 p-1.5 sm:p-2 rounded-lg flex-shrink-0">
+              <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
             </div>
-            <div>
-              <h2 className="text-xl font-bold text-gray-800">{theme}</h2>
-              <p className="text-sm text-gray-600">Histórico de desempenho</p>
+            <div className="min-w-0">
+              <h2 className="text-lg sm:text-xl font-bold text-gray-800 truncate">{theme}</h2>
+              <p className="text-xs sm:text-sm text-gray-600 hidden sm:block">Histórico de desempenho</p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
             {onViewContent && (
               <button
                 onClick={() => {
                   onClose();
                   onViewContent(theme);
                 }}
-                className="px-4 py-2 bg-indigo-500 text-white rounded-lg font-medium hover:bg-indigo-600 transition-colors flex items-center gap-2"
+                className="px-3 sm:px-4 py-1.5 sm:py-2 bg-indigo-500 text-white rounded-lg font-medium hover:bg-indigo-600 transition-colors flex items-center gap-1 sm:gap-2 text-xs sm:text-sm touch-manipulation"
               >
-                <FileText className="w-4 h-4" />
-                Conteúdo
+                <FileText className="w-3 h-3 sm:w-4 sm:h-4" />
+                <span className="hidden sm:inline">Conteúdo</span>
               </button>
             )}
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-gray-600 transition-colors"
+              className="text-gray-400 hover:text-gray-600 transition-colors p-1 touch-manipulation"
+              aria-label="Fechar"
             >
-              <X className="w-6 h-6" />
+              <X className="w-5 h-5 sm:w-6 sm:h-6" />
             </button>
           </div>
         </div>
 
-        <div className="p-6">
+        <div className="p-4 sm:p-6">
           {loading ? (
             <div className="text-center py-12 text-gray-600">Carregando...</div>
           ) : sessions.length === 0 ? (
@@ -96,26 +97,26 @@ export function ThemeHistory({ theme, onClose, onViewContent }: ThemeHistoryProp
             </div>
           ) : (
             <>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                  <p className="text-sm text-blue-700 font-medium mb-1">Total de Sessões</p>
-                  <p className="text-3xl font-bold text-blue-900">{stats?.totalSessions}</p>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 sm:p-4">
+                  <p className="text-xs sm:text-sm text-blue-700 font-medium mb-1">Total de Sessões</p>
+                  <p className="text-2xl sm:text-3xl font-bold text-blue-900">{stats?.totalSessions}</p>
                 </div>
-                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                  <p className="text-sm text-green-700 font-medium mb-1">Média Geral</p>
-                  <p className="text-3xl font-bold text-green-900">
+                <div className="bg-green-50 border border-green-200 rounded-lg p-3 sm:p-4">
+                  <p className="text-xs sm:text-sm text-green-700 font-medium mb-1">Média Geral</p>
+                  <p className="text-2xl sm:text-3xl font-bold text-green-900">
                     {stats?.averageAccuracy.toFixed(1)}%
                   </p>
                 </div>
-                <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
-                  <p className="text-sm text-purple-700 font-medium mb-1">Melhor Resultado</p>
-                  <p className="text-3xl font-bold text-purple-900">
+                <div className="bg-purple-50 border border-purple-200 rounded-lg p-3 sm:p-4">
+                  <p className="text-xs sm:text-sm text-purple-700 font-medium mb-1">Melhor Resultado</p>
+                  <p className="text-2xl sm:text-3xl font-bold text-purple-900">
                     {stats?.bestAccuracy.toFixed(1)}%
                   </p>
                 </div>
-                <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
-                  <p className="text-sm text-orange-700 font-medium mb-1">Total de Questões</p>
-                  <p className="text-3xl font-bold text-orange-900">
+                <div className="bg-orange-50 border border-orange-200 rounded-lg p-3 sm:p-4">
+                  <p className="text-xs sm:text-sm text-orange-700 font-medium mb-1">Total de Questões</p>
+                  <p className="text-2xl sm:text-3xl font-bold text-orange-900">
                     {stats?.totalQuestions}
                   </p>
                 </div>
@@ -159,15 +160,15 @@ export function ThemeHistory({ theme, onClose, onViewContent }: ThemeHistoryProp
                     key={session.id}
                     className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors"
                   >
-                    <div className="flex items-start justify-between mb-3">
-                      <div className="flex items-center gap-3">
-                        <div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-semibold">
+                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-0 mb-3">
+                      <div className="flex items-center gap-2 sm:gap-3">
+                        <div className="bg-blue-100 text-blue-800 px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-semibold">
                           #{sessions.length - index}
                         </div>
                         <div>
-                          <div className="flex items-center gap-2">
-                            <Calendar className="w-4 h-4 text-gray-500" />
-                            <span className="text-sm font-medium text-gray-700">
+                          <div className="flex items-center gap-1 sm:gap-2">
+                            <Calendar className="w-3 h-3 sm:w-4 sm:h-4 text-gray-500" />
+                            <span className="text-xs sm:text-sm font-medium text-gray-700">
                               {new Date(session.session_date).toLocaleDateString('pt-BR', {
                                 weekday: 'short',
                                 year: 'numeric',
@@ -178,16 +179,16 @@ export function ThemeHistory({ theme, onClose, onViewContent }: ThemeHistoryProp
                           </div>
                         </div>
                       </div>
-                      <div className={`text-3xl font-bold ${
+                      <div className={`text-2xl sm:text-3xl font-bold ${
                         session.accuracy_percentage >= 60 ? 'text-green-600' : 'text-orange-600'
                       }`}>
                         {session.accuracy_percentage.toFixed(0)}%
                       </div>
                     </div>
-                    <p className="text-gray-700 mb-2">{session.content}</p>
-                    <div className="flex items-center gap-4 text-sm text-gray-600">
+                    <p className="text-sm sm:text-base text-gray-700 mb-2 break-words">{session.content}</p>
+                    <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-xs sm:text-sm text-gray-600">
                       <span>{session.correct_questions}/{session.total_questions} questões corretas</span>
-                      <span>•</span>
+                      <span className="hidden sm:inline">•</span>
                       <span>
                         {session.accuracy_percentage >= 60 ? 'Revisão em 15 dias' : 'Revisão em 5 dias'}
                       </span>

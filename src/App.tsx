@@ -58,10 +58,11 @@ function App() {
     <div className="relative">
       <button
         onClick={handleSignOut}
-        className="fixed top-4 right-4 z-40 px-4 py-2 bg-white text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors shadow-md flex items-center gap-2 border border-gray-200"
+        className="fixed top-2 sm:top-4 right-2 sm:right-4 z-40 px-3 sm:px-4 py-1.5 sm:py-2 bg-white text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors shadow-md flex items-center gap-1.5 sm:gap-2 border border-gray-200 text-xs sm:text-sm touch-manipulation"
+        aria-label="Sair"
       >
-        <LogOut className="w-4 h-4" />
-        Sair
+        <LogOut className="w-3 h-3 sm:w-4 sm:h-4" />
+        <span className="hidden sm:inline">Sair</span>
       </button>
 
       <Dashboard

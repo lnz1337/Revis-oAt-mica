@@ -71,24 +71,25 @@ export function GamificationDashboard({ onClose }: GamificationDashboardProps) {
   }
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
-        <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="bg-yellow-500 p-2 rounded-lg">
-              <Trophy className="w-5 h-5 text-white" />
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-2 sm:p-4 z-50 overflow-y-auto">
+      <div className="bg-white rounded-xl sm:rounded-2xl shadow-2xl w-full max-w-4xl max-h-[95vh] sm:max-h-[90vh] overflow-y-auto my-auto">
+        <div className="sticky top-0 bg-white border-b border-gray-200 px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between z-10">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+            <div className="bg-yellow-500 p-1.5 sm:p-2 rounded-lg flex-shrink-0">
+              <Trophy className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
             </div>
-            <h2 className="text-xl font-bold text-gray-800">Gamificação</h2>
+            <h2 className="text-lg sm:text-xl font-bold text-gray-800 truncate">Gamificação</h2>
           </div>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
+            className="text-gray-400 hover:text-gray-600 transition-colors flex-shrink-0 ml-2 p-1 touch-manipulation"
+            aria-label="Fechar"
           >
-            <X className="w-6 h-6" />
+            <X className="w-5 h-5 sm:w-6 sm:h-6" />
           </button>
         </div>
 
-        <div className="p-6 space-y-6">
+        <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
           {/* Pontos e Streak */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="bg-gradient-to-br from-yellow-50 to-orange-50 border border-yellow-200 rounded-xl p-6">
@@ -134,7 +135,7 @@ export function GamificationDashboard({ onClose }: GamificationDashboardProps) {
               </button>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4 mb-4">
               {badges.slice(0, showBadges ? badges.length : 4).map((badge) => {
                 const definition = BADGE_DEFINITIONS[badge.badge_type as BadgeType];
                 if (!definition) return null;
@@ -142,10 +143,10 @@ export function GamificationDashboard({ onClose }: GamificationDashboardProps) {
                 return (
                   <div
                     key={badge.id}
-                    className="bg-gradient-to-br from-purple-50 to-pink-50 border-2 border-purple-200 rounded-lg p-4 text-center"
+                    className="bg-gradient-to-br from-purple-50 to-pink-50 border-2 border-purple-200 rounded-lg p-3 sm:p-4 text-center"
                   >
-                    <div className="text-4xl mb-2">{definition.icon}</div>
-                    <p className="text-xs font-semibold text-gray-800 mb-1">
+                    <div className="text-3xl sm:text-4xl mb-2">{definition.icon}</div>
+                    <p className="text-xs font-semibold text-gray-800 mb-1 line-clamp-2">
                       {definition.name}
                     </p>
                     <p className="text-xs text-gray-600">

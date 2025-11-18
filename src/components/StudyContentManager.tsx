@@ -129,38 +129,39 @@ export function StudyContentManager({ theme, onClose }: StudyContentManagerProps
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
-        <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="bg-indigo-500 p-2 rounded-lg">
-              <FileText className="w-5 h-5 text-white" />
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-2 sm:p-4 z-50 overflow-y-auto">
+      <div className="bg-white rounded-xl sm:rounded-2xl shadow-2xl w-full max-w-4xl max-h-[95vh] sm:max-h-[90vh] overflow-y-auto my-auto">
+        <div className="sticky top-0 bg-white border-b border-gray-200 px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between z-10">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+            <div className="bg-indigo-500 p-1.5 sm:p-2 rounded-lg flex-shrink-0">
+              <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
             </div>
-            <div>
-              <h2 className="text-xl font-bold text-gray-800">Conteúdo de Estudo</h2>
-              <p className="text-sm text-gray-600">{theme}</p>
+            <div className="min-w-0">
+              <h2 className="text-lg sm:text-xl font-bold text-gray-800 truncate">Conteúdo de Estudo</h2>
+              <p className="text-xs sm:text-sm text-gray-600 truncate">{theme}</p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
             {!showAddForm && (
               <button
                 onClick={() => setShowAddForm(true)}
-                className="px-4 py-2 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600 transition-colors flex items-center gap-2"
+                className="px-3 sm:px-4 py-1.5 sm:py-2 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600 transition-colors flex items-center gap-1 sm:gap-2 text-xs sm:text-sm touch-manipulation"
               >
-                <Plus className="w-4 h-4" />
-                Adicionar
+                <Plus className="w-3 h-3 sm:w-4 sm:h-4" />
+                <span className="hidden sm:inline">Adicionar</span>
               </button>
             )}
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-gray-600 transition-colors"
+              className="text-gray-400 hover:text-gray-600 transition-colors p-1 touch-manipulation"
+              aria-label="Fechar"
             >
-              <X className="w-6 h-6" />
+              <X className="w-5 h-5 sm:w-6 sm:h-6" />
             </button>
           </div>
         </div>
 
-        <div className="p-6">
+        <div className="p-4 sm:p-6">
           {error && (
             <div className="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm whitespace-pre-line">
               {error}
@@ -190,7 +191,7 @@ export function StudyContentManager({ theme, onClose }: StudyContentManagerProps
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Tipo de Conteúdo
                   </label>
-                  <div className="flex gap-3">
+                  <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
                     {(['note', 'link', 'pdf'] as ContentType[]).map((type) => (
                       <button
                         key={type}
@@ -200,7 +201,7 @@ export function StudyContentManager({ theme, onClose }: StudyContentManagerProps
                           setContent('');
                           setFile(null);
                         }}
-                        className={`flex-1 px-4 py-2 rounded-lg border-2 font-medium transition-colors ${
+                        className={`flex-1 px-3 sm:px-4 py-2 rounded-lg border-2 font-medium transition-colors text-sm sm:text-base touch-manipulation ${
                           contentType === type
                             ? 'border-blue-500 bg-blue-50 text-blue-700'
                             : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300'
@@ -280,7 +281,7 @@ export function StudyContentManager({ theme, onClose }: StudyContentManagerProps
                   </div>
                 )}
 
-                <div className="flex gap-3 pt-2">
+                <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 pt-2">
                   <button
                     type="button"
                     onClick={() => {
@@ -289,14 +290,14 @@ export function StudyContentManager({ theme, onClose }: StudyContentManagerProps
                       setContent('');
                       setFile(null);
                     }}
-                    className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors"
+                    className="flex-1 px-4 py-2.5 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors touch-manipulation text-sm sm:text-base"
                   >
                     Cancelar
                   </button>
                   <button
                     type="submit"
                     disabled={saving}
-                    className="flex-1 px-4 py-2 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex-1 px-4 py-2.5 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation text-sm sm:text-base"
                   >
                     {saving ? 'Salvando...' : 'Salvar'}
                   </button>

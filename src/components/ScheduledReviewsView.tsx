@@ -74,24 +74,25 @@ export function ScheduledReviewsView({ onClose, onRefresh, onViewContent }: Sche
   }, {} as Record<string, ScheduledReview[]>);
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
-        <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="bg-blue-500 p-2 rounded-lg">
-              <Calendar className="w-5 h-5 text-white" />
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-2 sm:p-4 z-50 overflow-y-auto">
+      <div className="bg-white rounded-xl sm:rounded-2xl shadow-2xl w-full max-w-4xl max-h-[95vh] sm:max-h-[90vh] overflow-y-auto my-auto">
+        <div className="sticky top-0 bg-white border-b border-gray-200 px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between z-10">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+            <div className="bg-blue-500 p-1.5 sm:p-2 rounded-lg flex-shrink-0">
+              <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
             </div>
-            <h2 className="text-xl font-bold text-gray-800">Revisões Agendadas</h2>
+            <h2 className="text-lg sm:text-xl font-bold text-gray-800 truncate">Revisões Agendadas</h2>
           </div>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
+            className="text-gray-400 hover:text-gray-600 transition-colors flex-shrink-0 ml-2 p-1 touch-manipulation"
+            aria-label="Fechar"
           >
-            <X className="w-6 h-6" />
+            <X className="w-5 h-5 sm:w-6 sm:h-6" />
           </button>
         </div>
 
-        <div className="p-6">
+        <div className="p-4 sm:p-6">
           {loading ? (
             <div className="text-center py-12 text-gray-600">Carregando...</div>
           ) : reviews.length === 0 ? (
@@ -140,45 +141,46 @@ export function ScheduledReviewsView({ onClose, onRefresh, onViewContent }: Sche
                                     )}
                                   </div>
                                   {isEditing ? (
-                                    <div className="flex items-center gap-2 mt-3">
+                                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 mt-3">
                                       <input
                                         type="date"
                                         value={newDate}
                                         onChange={(e) => setNewDate(e.target.value)}
                                         min={new Date().toISOString().split('T')[0]}
-                                        className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                                        className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm touch-manipulation"
                                       />
                                       <button
                                         onClick={() => handleReschedule(review.id)}
-                                        className="px-3 py-2 bg-blue-500 text-white rounded-lg text-sm hover:bg-blue-600"
+                                        className="px-3 py-2 bg-blue-500 text-white rounded-lg text-sm hover:bg-blue-600 touch-manipulation"
                                       >
                                         Salvar
                                       </button>
                                       <button
                                         onClick={() => setEditingId(null)}
-                                        className="px-3 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50"
+                                        className="px-3 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 touch-manipulation"
                                       >
                                         Cancelar
                                       </button>
                                     </div>
                                   ) : (
-                                    <p className="text-sm text-gray-600">
+                                    <p className="text-xs sm:text-sm text-gray-600">
                                       Data da revisão: {new Date(review.review_date).toLocaleDateString('pt-BR')}
                                     </p>
                                   )}
                                 </div>
                                 {!isEditing && (
-                                  <div className="flex gap-2">
+                                  <div className="flex gap-1 sm:gap-2 flex-shrink-0">
                                     {onViewContent && (
                                       <button
                                         onClick={() => {
                                           onClose();
                                           onViewContent(review.theme);
                                         }}
-                                        className="p-2 text-gray-600 hover:text-indigo-600 transition-colors"
+                                        className="p-2 sm:p-2.5 text-gray-600 hover:text-indigo-600 transition-colors touch-manipulation"
                                         title="Ver conteúdo de estudo"
+                                        aria-label="Ver conteúdo"
                                       >
-                                        <FileText className="w-5 h-5" />
+                                        <FileText className="w-4 h-4 sm:w-5 sm:h-5" />
                                       </button>
                                     )}
                                     <button
@@ -186,17 +188,19 @@ export function ScheduledReviewsView({ onClose, onRefresh, onViewContent }: Sche
                                         setEditingId(review.id);
                                         setNewDate(review.review_date);
                                       }}
-                                      className="p-2 text-gray-600 hover:text-blue-600 transition-colors"
+                                      className="p-2 sm:p-2.5 text-gray-600 hover:text-blue-600 transition-colors touch-manipulation"
                                       title="Reagendar"
+                                      aria-label="Reagendar"
                                     >
-                                      <Edit3 className="w-5 h-5" />
+                                      <Edit3 className="w-4 h-4 sm:w-5 sm:h-5" />
                                     </button>
                                     <button
                                       onClick={() => handleComplete(review.id)}
-                                      className="p-2 text-gray-600 hover:text-green-600 transition-colors"
+                                      className="p-2 sm:p-2.5 text-gray-600 hover:text-green-600 transition-colors touch-manipulation"
                                       title="Marcar como completa"
+                                      aria-label="Completar"
                                     >
-                                      <Check className="w-5 h-5" />
+                                      <Check className="w-4 h-4 sm:w-5 sm:h-5" />
                                     </button>
                                   </div>
                                 )}
@@ -213,9 +217,9 @@ export function ScheduledReviewsView({ onClose, onRefresh, onViewContent }: Sche
         </div>
 
         {reviews.length > 0 && (
-          <div className="sticky bottom-0 bg-gray-50 border-t border-gray-200 px-6 py-4">
-            <div className="flex items-center gap-2 text-sm text-gray-600">
-              <Clock className="w-4 h-4" />
+          <div className="sticky bottom-0 bg-gray-50 border-t border-gray-200 px-4 sm:px-6 py-3 sm:py-4">
+            <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-600">
+              <Clock className="w-3 h-3 sm:w-4 sm:h-4" />
               <span>{reviews.length} revisões pendentes</span>
             </div>
           </div>

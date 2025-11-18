@@ -293,3 +293,51 @@ export const getThemeHistory = async (theme: string) => {
   if (error) throw error;
   return data;
 };
+
+export const deleteTheme = async (theme: string) => {
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) {
+    throw new Error('User not authenticated');
+  }
+
+  // Buscar todas as sessões do tema para obter os IDs
+  const { data: sessions, error: sessionsError } = await supabase
+    .from('study_sessions')
+    .select('id')
+    .eq('user_id', user.id)
+    .eq('theme', theme);
+
+  if (sessionsError) throw sessionsError;
+
+  const sessionIds = sessions?.map(s => s.id) || [];
+
+  // Deletar revisões agendadas relacionadas (as revisões são deletadas automaticamente por CASCADE,
+  // mas vamos deletar explicitamente para garantir)
+  if (sessionIds.length > 0) {
+    const { error: reviewsError } = await supabase
+      .from('scheduled_reviews')
+      .delete()
+      .eq('user_id', user.id)
+      .eq('theme', theme);
+
+    if (reviewsError) {
+      console.error('Erro ao deletar revisões:', reviewsError);
+      // Continuar mesmo se houver erro, pois o CASCADE deve deletar
+    }
+  }
+
+  // Deletar todas as sessões do tema
+  const { error: deleteError } = await supabase
+    .from('study_sessions')
+    .delete()
+    .eq('user_id', user.id)
+    .eq('theme', theme);
+
+  if (deleteError) throw deleteError;
+
+  // Nota: O conteúdo de estudo (study_content) não é deletado automaticamente,
+  // pois pode ser útil manter mesmo após deletar as sessões
+  // Se quiser deletar também, adicione aqui:
+  // await supabase.from('study_content').delete().eq('user_id', user.id).eq('theme', theme);
+};

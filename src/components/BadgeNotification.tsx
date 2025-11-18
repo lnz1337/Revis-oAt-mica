@@ -25,22 +25,22 @@ export function BadgeNotification({ badgeType, onClose }: BadgeNotificationProps
 
   return (
     <div
-      className={`fixed top-20 right-4 z-50 transition-all duration-300 ${
+      className={`fixed top-16 sm:top-20 right-2 sm:right-4 left-2 sm:left-auto z-50 transition-all duration-300 max-w-sm sm:max-w-sm mx-auto sm:mx-0 ${
         isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-full'
       }`}
     >
-      <div className="bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl shadow-2xl p-6 max-w-sm border-2 border-white">
-        <div className="flex items-start gap-4">
-          <div className="text-5xl">{badge.icon}</div>
-          <div className="flex-1">
+      <div className="bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl shadow-2xl p-4 sm:p-6 border-2 border-white">
+        <div className="flex items-start gap-3 sm:gap-4">
+          <div className="text-4xl sm:text-5xl flex-shrink-0">{badge.icon}</div>
+          <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-2">
-              <Award className="w-5 h-5 text-yellow-300" />
-              <h3 className="text-lg font-bold text-white">Badge Conquistado!</h3>
+              <Award className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-300 flex-shrink-0" />
+              <h3 className="text-base sm:text-lg font-bold text-white">Badge Conquistado!</h3>
             </div>
-            <p className="text-white font-semibold mb-1">{badge.name}</p>
-            <p className="text-purple-100 text-sm">{badge.description}</p>
-            <div className="mt-3 bg-white bg-opacity-20 rounded-lg px-3 py-1 inline-block">
-              <p className="text-yellow-300 text-sm font-semibold">+50 pontos</p>
+            <p className="text-white font-semibold mb-1 text-sm sm:text-base break-words">{badge.name}</p>
+            <p className="text-purple-100 text-xs sm:text-sm break-words">{badge.description}</p>
+            <div className="mt-2 sm:mt-3 bg-white bg-opacity-20 rounded-lg px-2 sm:px-3 py-1 inline-block">
+              <p className="text-yellow-300 text-xs sm:text-sm font-semibold">+50 pontos</p>
             </div>
           </div>
           <button
@@ -48,9 +48,10 @@ export function BadgeNotification({ badgeType, onClose }: BadgeNotificationProps
               setIsVisible(false);
               setTimeout(onClose, 300);
             }}
-            className="text-white hover:text-yellow-200 transition-colors"
+            className="text-white hover:text-yellow-200 transition-colors flex-shrink-0 p-1 touch-manipulation"
+            aria-label="Fechar"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>
         </div>
       </div>

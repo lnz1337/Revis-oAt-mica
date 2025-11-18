@@ -1,3 +1,41 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Melhorias para mobile */
+@layer base {
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  input[type="date"],
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  input[type="url"],
+  textarea {
+    font-size: 16px; /* Previne zoom no iOS */
+  }
+  
+  @media (max-width: 640px) {
+    input[type="date"],
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="number"],
+    input[type="url"],
+    textarea,
+    select {
+      font-size: 16px !important; /* Previne zoom automático no iOS */
+    }
+  }
+}
+
+/* Melhorias de touch */
+@layer utilities {
+  .touch-manipulation {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+}
