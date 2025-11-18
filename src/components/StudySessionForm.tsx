@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { BookOpen, X } from 'lucide-react';
 import { createStudySession } from '../lib/studyService';
-import { supabase } from '../lib/supabase';
 
 interface StudySessionFormProps {
   onClose: () => void;
@@ -27,12 +26,6 @@ export function StudySessionForm({ onClose, onSuccess }: StudySessionFormProps) 
     setError(null);
 
     try {
-      // Verificar se o usuário está autenticado antes de tentar criar a sessão
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session?.user) {
-        throw new Error('Você não está autenticado. Por favor, faça login novamente.');
-      }
-
       await createStudySession({
         theme,
         content,
@@ -42,14 +35,7 @@ export function StudySessionForm({ onClose, onSuccess }: StudySessionFormProps) 
       });
       onSuccess();
     } catch (err) {
-      console.error('Erro ao criar sessão:', err);
-      const errorMessage = err instanceof Error ? err.message : 'Erro ao registrar sessão';
-      setError(errorMessage);
-      
-      // Se for erro de autenticação, sugerir fazer login novamente
-      if (errorMessage.includes('não autenticado') || errorMessage.includes('not authenticated')) {
-        setError(`${errorMessage}\n\nPor favor, recarregue a página e faça login novamente.`);
-      }
+      setError(err instanceof Error ? err.message : 'Erro ao registrar sessão');
     } finally {
       setLoading(false);
     }

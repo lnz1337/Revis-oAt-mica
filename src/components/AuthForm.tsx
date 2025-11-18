@@ -20,36 +20,19 @@ export function AuthForm({ onAuthSuccess }: AuthFormProps) {
 
     try {
       if (isLogin) {
-        const { data, error } = await supabase.auth.signInWithPassword({
+        const { error } = await supabase.auth.signInWithPassword({
           email,
           password,
         });
         if (error) throw error;
-        
-        // Aguardar um pouco para garantir que a sessão está atualizada
-        if (data.session) {
-          await new Promise(resolve => setTimeout(resolve, 200));
-        }
       } else {
-        const { data, error } = await supabase.auth.signUp({
+        const { error } = await supabase.auth.signUp({
           email,
           password,
         });
         if (error) throw error;
-        
-        // Aguardar um pouco para garantir que a sessão está atualizada
-        if (data.session) {
-          await new Promise(resolve => setTimeout(resolve, 200));
-        }
       }
-      
-      // Verificar se a sessão está realmente ativa antes de chamar onAuthSuccess
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user) {
-        onAuthSuccess();
-      } else {
-        throw new Error('Falha ao obter sessão após autenticação');
-      }
+      onAuthSuccess();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erro na autenticação');
     } finally {
