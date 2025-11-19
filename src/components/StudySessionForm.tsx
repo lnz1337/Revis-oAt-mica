@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { BookOpen, X } from 'lucide-react';
 import { createStudySession } from '../lib/studyService';
+import { useGamification } from '../contexts/GamificationContext';
 
 interface StudySessionFormProps {
   onClose: () => void;
@@ -8,6 +9,7 @@ interface StudySessionFormProps {
 }
 
 export function StudySessionForm({ onClose, onSuccess }: StudySessionFormProps) {
+  const { showBadge, showPoints } = useGamification();
   const [theme, setTheme] = useState('');
   const [content, setContent] = useState('');
   const [totalQuestions, setTotalQuestions] = useState('');
@@ -36,13 +38,25 @@ export function StudySessionForm({ onClose, onSuccess }: StudySessionFormProps) 
     setError(null);
 
     try {
-      await createStudySession({
+      const { newBadges, pointsEarned } = await createStudySession({
         theme,
         content,
         total_questions: parseInt(totalQuestions),
         correct_questions: parseInt(correctQuestions),
         session_date: sessionDate,
       });
+
+      // Mostrar feedback de gamificação
+      if (pointsEarned > 0) {
+        showPoints(pointsEarned, 'Sessão de Estudo');
+      }
+
+      if (newBadges && newBadges.length > 0) {
+        newBadges.forEach(badge => {
+          showBadge(badge);
+        });
+      }
+
       onSuccess();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erro ao registrar sessão');
@@ -138,9 +152,8 @@ export function StudySessionForm({ onClose, onSuccess }: StudySessionFormProps) 
                 <span className="text-sm font-medium text-gray-700">
                   Taxa de Acerto
                 </span>
-                <span className={`text-2xl font-bold ${
-                  parseFloat(accuracyPercentage) >= 60 ? 'text-green-600' : 'text-orange-600'
-                }`}>
+                <span className={`text-2xl font-bold ${parseFloat(accuracyPercentage) >= 60 ? 'text-green-600' : 'text-orange-600'
+                  }`}>
                   {accuracyPercentage}%
                 </span>
               </div>

@@ -8,6 +8,8 @@ import { ThemeHistory } from './components/ThemeHistory';
 import { StudyContentManager } from './components/StudyContentManager';
 import { GamificationDashboard } from './components/GamificationDashboard';
 import { LogOut } from 'lucide-react';
+import { GamificationProvider } from './contexts/GamificationContext';
+import { BadgeNotification } from './components/BadgeNotification';
 
 function App() {
   const [user, setUser] = useState<any>(null);
@@ -55,70 +57,73 @@ function App() {
   }
 
   return (
-    <div className="relative">
-      <button
-        onClick={handleSignOut}
-        className="fixed top-2 sm:top-4 right-2 sm:right-4 z-40 px-3 sm:px-4 py-1.5 sm:py-2 bg-white text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors shadow-md flex items-center gap-1.5 sm:gap-2 border border-gray-200 text-xs sm:text-sm touch-manipulation"
-        aria-label="Sair"
-      >
-        <LogOut className="w-3 h-3 sm:w-4 sm:h-4" />
-        <span className="hidden sm:inline">Sair</span>
-      </button>
+    <GamificationProvider>
+      <div className="relative">
+        <BadgeNotification />
+        <button
+          onClick={handleSignOut}
+          className="fixed top-2 sm:top-4 right-2 sm:right-4 z-40 px-3 sm:px-4 py-1.5 sm:py-2 bg-white text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors shadow-md flex items-center gap-1.5 sm:gap-2 border border-gray-200 text-xs sm:text-sm touch-manipulation"
+          aria-label="Sair"
+        >
+          <LogOut className="w-3 h-3 sm:w-4 sm:h-4" />
+          <span className="hidden sm:inline">Sair</span>
+        </button>
 
-      <Dashboard
-        key={refreshKey}
-        onNewSession={() => setShowSessionForm(true)}
-        onViewReviews={() => setShowReviewsView(true)}
-        onViewHistory={(theme) => setSelectedTheme(theme)}
-        onViewContent={(theme) => setContentTheme(theme)}
-        onViewGamification={() => setShowGamification(true)}
-      />
-
-      {showSessionForm && (
-        <StudySessionForm
-          onClose={() => setShowSessionForm(false)}
-          onSuccess={() => {
-            setShowSessionForm(false);
-            handleRefresh();
-          }}
+        <Dashboard
+          key={refreshKey}
+          onNewSession={() => setShowSessionForm(true)}
+          onViewReviews={() => setShowReviewsView(true)}
+          onViewHistory={(theme) => setSelectedTheme(theme)}
+          onViewContent={(theme) => setContentTheme(theme)}
+          onViewGamification={() => setShowGamification(true)}
         />
-      )}
 
-      {showReviewsView && (
-        <ScheduledReviewsView
-          onClose={() => setShowReviewsView(false)}
-          onRefresh={handleRefresh}
-          onViewContent={(theme) => {
-            setShowReviewsView(false);
-            setContentTheme(theme);
-          }}
-        />
-      )}
+        {showSessionForm && (
+          <StudySessionForm
+            onClose={() => setShowSessionForm(false)}
+            onSuccess={() => {
+              setShowSessionForm(false);
+              handleRefresh();
+            }}
+          />
+        )}
 
-      {selectedTheme && (
-        <ThemeHistory
-          theme={selectedTheme}
-          onClose={() => setSelectedTheme(null)}
-          onViewContent={(theme) => {
-            setSelectedTheme(null);
-            setContentTheme(theme);
-          }}
-        />
-      )}
+        {showReviewsView && (
+          <ScheduledReviewsView
+            onClose={() => setShowReviewsView(false)}
+            onRefresh={handleRefresh}
+            onViewContent={(theme) => {
+              setShowReviewsView(false);
+              setContentTheme(theme);
+            }}
+          />
+        )}
 
-      {contentTheme && (
-        <StudyContentManager
-          theme={contentTheme}
-          onClose={() => setContentTheme(null)}
-        />
-      )}
+        {selectedTheme && (
+          <ThemeHistory
+            theme={selectedTheme}
+            onClose={() => setSelectedTheme(null)}
+            onViewContent={(theme) => {
+              setSelectedTheme(null);
+              setContentTheme(theme);
+            }}
+          />
+        )}
 
-      {showGamification && (
-        <GamificationDashboard
-          onClose={() => setShowGamification(false)}
-        />
-      )}
-    </div>
+        {contentTheme && (
+          <StudyContentManager
+            theme={contentTheme}
+            onClose={() => setContentTheme(null)}
+          />
+        )}
+
+        {showGamification && (
+          <GamificationDashboard
+            onClose={() => setShowGamification(false)}
+          />
+        )}
+      </div>
+    </GamificationProvider>
   );
 }
 

@@ -1,5 +1,6 @@
 import { supabase } from './supabase';
-import { addPoints, updateStreak, checkBadgesForStats, checkAndAwardBadge } from './gamificationService';
+import { addPoints, updateStreak, checkAndAwardBadge, checkBadgesForStats } from './gamificationService';
+import { createGoogleCalendarEvent } from './calendarService';
 
 export interface CreateStudySessionInput {
   theme: string;
@@ -48,15 +49,39 @@ export const createStudySession = async (input: CreateStudySessionInput) => {
 
   if (reviewError) throw reviewError;
 
+  // Criar evento no Google Calendar
+  try {
+    // A data da revisão é apenas YYYY-MM-DD, vamos definir para as 9:00 da manhã
+    const eventDate = new Date(reviewDate);
+    eventDate.setHours(9, 0, 0, 0);
+
+    const endTime = new Date(eventDate);
+    endTime.setMinutes(endTime.getMinutes() + 30); // 30 min de duração
+
+    await createGoogleCalendarEvent({
+      summary: `Revisão: ${input.theme}`,
+      description: `Revisão do conteúdo: ${input.content}`,
+      startTime: eventDate.toISOString(),
+      endTime: endTime.toISOString(),
+    });
+  } catch (calendarError) {
+    // Apenas logar o erro, não falhar a criação da sessão
+    // Isso é normal se o usuário não estiver logado com Google
+    console.log('Não foi possível criar evento no Google Calendar:', calendarError);
+  }
+
   // Sistema de gamificação
+  let newBadges: any[] = [];
+  let pointsEarned = 0;
+
   try {
     // Adicionar pontos por sessão (base + bônus por acurácia)
     const basePoints = 10;
     const accuracyBonus = Math.floor(accuracyPercentage / 10); // Bônus baseado na acurácia
-    const totalPoints = basePoints + accuracyBonus;
-    
+    pointsEarned = basePoints + accuracyBonus;
+
     await addPoints(
-      totalPoints,
+      pointsEarned,
       'study_session',
       session.id,
       `Sessão: ${input.theme} (${accuracyPercentage.toFixed(0)}% de acertos)`
@@ -67,7 +92,8 @@ export const createStudySession = async (input: CreateStudySessionInput) => {
 
     // Verificar se é sessão perfeita
     if (accuracyPercentage === 100) {
-      await checkAndAwardBadge('perfect_session');
+      const badge = await checkAndAwardBadge('perfect_session');
+      if (badge) newBadges.push(badge);
     }
 
     // Obter estatísticas para verificar badges
@@ -78,26 +104,28 @@ export const createStudySession = async (input: CreateStudySessionInput) => {
       .select('*')
       .eq('user_id', user.id)
       .eq('is_completed', true);
-    
+
     const streak = await supabase
       .from('study_streaks')
       .select('current_streak')
       .eq('user_id', user.id)
       .single();
 
-    await checkBadgesForStats({
+    const statsBadges = await checkBadgesForStats({
       totalSessions: allSessions.length,
       totalReviews: completedReviews.data?.length || 0,
       totalThemes: uniqueThemes.size,
       currentStreak: streak.data?.current_streak || 0,
       hasPerfectSession: allSessions.some(s => s.accuracy_percentage === 100),
     });
+
+    newBadges = [...newBadges, ...statsBadges];
   } catch (gamificationError) {
     console.error('Erro no sistema de gamificação:', gamificationError);
     // Não falhar a criação da sessão se houver erro na gamificação
   }
 
-  return session;
+  return { session, newBadges, pointsEarned };
 };
 
 export const getStudySessions = async () => {
@@ -163,10 +191,15 @@ export const completeReview = async (reviewId: string) => {
 
   if (error) throw error;
 
+  if (error) throw error;
+
   // Sistema de gamificação
+  let newBadges: any[] = [];
+  let pointsEarned = 0;
+
   try {
     console.log('Iniciando sistema de gamificação para revisão:', reviewId);
-    
+
     // Adicionar pontos por revisão
     try {
       await addPoints(
@@ -200,19 +233,19 @@ export const completeReview = async (reviewId: string) => {
     // Obter estatísticas para verificar badges
     const allSessions = await getStudySessions();
     const uniqueThemes = new Set(allSessions.map(s => s.theme));
-    
+
     // Buscar revisões completadas (incluindo a que acabou de ser completada)
     const { data: completedReviewsData, error: reviewsError } = await supabase
       .from('scheduled_reviews')
       .select('*')
       .eq('user_id', user.id)
       .eq('is_completed', true);
-    
+
     if (reviewsError) {
       console.error('Erro ao buscar revisões completadas:', reviewsError);
       throw new Error(`Erro ao buscar revisões: ${reviewsError.message}`);
     }
-    
+
     const { data: streakData, error: streakError } = await supabase
       .from('study_streaks')
       .select('current_streak')
@@ -224,7 +257,7 @@ export const completeReview = async (reviewId: string) => {
     }
 
     const totalReviews = completedReviewsData?.length || 0;
-    
+
     console.log('Verificando badges com estatísticas:', {
       totalSessions: allSessions.length,
       totalReviews,
@@ -233,13 +266,15 @@ export const completeReview = async (reviewId: string) => {
     });
 
     try {
-      const newBadges = await checkBadgesForStats({
+      const statsBadges = await checkBadgesForStats({
         totalSessions: allSessions.length,
         totalReviews,
         totalThemes: uniqueThemes.size,
         currentStreak: streakData?.current_streak || 0,
         hasPerfectSession: allSessions.some(s => s.accuracy_percentage === 100),
       });
+
+      newBadges = [...newBadges, ...statsBadges];
 
       if (newBadges.length > 0) {
         console.log('Novos badges conquistados:', newBadges);
@@ -262,6 +297,8 @@ export const completeReview = async (reviewId: string) => {
     // Não falhar a conclusão da revisão se houver erro na gamificação
     // mas vamos logar para debug
   }
+
+  return { newBadges, pointsEarned };
 };
 
 export const rescheduleReview = async (reviewId: string, newDate: string) => {

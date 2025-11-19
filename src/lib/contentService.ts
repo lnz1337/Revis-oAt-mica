@@ -10,25 +10,6 @@ export interface CreateContentInput {
   file?: File;
 }
 
-// Função auxiliar para verificar se o bucket existe
-const ensureBucketExists = async (): Promise<void> => {
-  const { data: buckets, error: listError } = await supabase.storage.listBuckets();
-  
-  if (listError) {
-    console.error('Erro ao listar buckets:', listError);
-    // Continuar mesmo se houver erro ao listar
-    return;
-  }
-
-  const bucketExists = buckets?.some(bucket => bucket.id === 'study-content');
-  
-  if (!bucketExists) {
-    throw new Error(
-      'O bucket de storage não foi criado. Por favor, crie o bucket "study-content" no painel do Supabase (Storage > New bucket) ou execute a migração SQL.'
-    );
-  }
-};
-
 export const createContent = async (input: CreateContentInput): Promise<StudyContent> => {
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -41,9 +22,6 @@ export const createContent = async (input: CreateContentInput): Promise<StudyCon
 
   // Se for PDF, verificar bucket e fazer upload do arquivo
   if (input.content_type === 'pdf' && input.file) {
-    // Verificar se o bucket existe antes de tentar fazer upload
-    await ensureBucketExists();
-
     const fileExt = input.file.name.split('.').pop();
     const fileNameWithExt = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
     const filePathInStorage = `${user.id}/${fileNameWithExt}`;

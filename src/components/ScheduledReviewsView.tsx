@@ -1,17 +1,21 @@
 import { useState, useEffect } from 'react';
-import { Calendar, Check, Clock, X, Edit3, FileText } from 'lucide-react';
+import { Calendar, CheckCircle, Clock, AlertCircle, X, RefreshCw, Edit3, FileText, Check } from 'lucide-react';
 import { getScheduledReviews, completeReview, rescheduleReview } from '../lib/studyService';
 import { ScheduledReview } from '../lib/supabase';
+import { useGamification } from '../contexts/GamificationContext';
 
 interface ScheduledReviewsViewProps {
   onClose: () => void;
   onRefresh: () => void;
-  onViewContent?: (theme: string) => void;
+  onViewContent: (theme: string) => void;
 }
 
 export function ScheduledReviewsView({ onClose, onRefresh, onViewContent }: ScheduledReviewsViewProps) {
+  const { showBadge, showPoints } = useGamification();
   const [reviews, setReviews] = useState<ScheduledReview[]>([]);
   const [loading, setLoading] = useState(true);
+  const [processingId, setProcessingId] = useState<string | null>(null);
+  const [reschedulingId, setReschedulingId] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [newDate, setNewDate] = useState('');
 
@@ -30,13 +34,29 @@ export function ScheduledReviewsView({ onClose, onRefresh, onViewContent }: Sche
     loadReviews();
   }, []);
 
-  const handleComplete = async (reviewId: string) => {
+  const handleComplete = async (review: ScheduledReview) => {
+    setProcessingId(review.id);
     try {
-      await completeReview(reviewId);
+      const { newBadges, pointsEarned } = await completeReview(review.id);
+
+      // Mostrar feedback de gamificação
+      if (pointsEarned > 0) {
+        showPoints(pointsEarned, `Revisão: ${review.theme}`);
+      }
+
+      if (newBadges && newBadges.length > 0) {
+        newBadges.forEach(badge => {
+          showBadge(badge);
+        });
+      }
+
       await loadReviews();
       onRefresh();
     } catch (error) {
       console.error('Erro ao completar revisão:', error);
+      alert('Erro ao completar revisão. Tente novamente.');
+    } finally {
+      setProcessingId(null);
     }
   };
 
@@ -44,7 +64,7 @@ export function ScheduledReviewsView({ onClose, onRefresh, onViewContent }: Sche
     if (!newDate) return;
     try {
       await rescheduleReview(reviewId, newDate);
-      setEditingId(null);
+      setReschedulingId(null);
       setNewDate('');
       await loadReviews();
       onRefresh();
@@ -125,7 +145,7 @@ export function ScheduledReviewsView({ onClose, onRefresh, onViewContent }: Sche
                           return (
                             <div
                               key={review.id}
-                              className={`border rounded-lg p-4 ${urgency.color}`}
+                              className={`border rounded - lg p - 4 ${urgency.color} `}
                             >
                               <div className="flex items-start justify-between">
                                 <div className="flex-1">
@@ -195,7 +215,7 @@ export function ScheduledReviewsView({ onClose, onRefresh, onViewContent }: Sche
                                       <Edit3 className="w-4 h-4 sm:w-5 sm:h-5" />
                                     </button>
                                     <button
-                                      onClick={() => handleComplete(review.id)}
+                                      onClick={() => handleComplete(review)}
                                       className="p-2 sm:p-2.5 text-gray-600 hover:text-green-600 transition-colors touch-manipulation"
                                       title="Marcar como completa"
                                       aria-label="Completar"

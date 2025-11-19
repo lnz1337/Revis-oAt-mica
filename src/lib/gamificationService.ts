@@ -331,7 +331,7 @@ export const getUserBadges = async (): Promise<UserBadge[]> => {
 };
 
 // Verificar e conceder badge
-export const checkAndAwardBadge = async (badgeType: BadgeType, metadata?: Record<string, any>): Promise<boolean> => {
+export const checkAndAwardBadge = async (badgeType: BadgeType, metadata?: Record<string, any>): Promise<BadgeType | null> => {
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) {
@@ -352,7 +352,7 @@ export const checkAndAwardBadge = async (badgeType: BadgeType, metadata?: Record
   }
 
   if (existing) {
-    return false; // Já possui o badge
+    return null; // Já possui o badge
   }
 
   // Conceder badge
@@ -367,7 +367,7 @@ export const checkAndAwardBadge = async (badgeType: BadgeType, metadata?: Record
   if (insertError) {
     // Se for erro de duplicata, significa que foi concedido entre a verificação e a inserção
     if (insertError.code === '23505') {
-      return false;
+      return null;
     }
     throw insertError;
   }
@@ -380,7 +380,7 @@ export const checkAndAwardBadge = async (badgeType: BadgeType, metadata?: Record
     // Não falhar se houver erro ao adicionar pontos
   }
 
-  return true; // Badge concedido
+  return badgeType; // Badge concedido
 };
 
 // Verificar badges baseados em estatísticas
